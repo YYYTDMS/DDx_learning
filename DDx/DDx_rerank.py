@@ -158,13 +158,22 @@ for i in range(len(test_pids)):
     temp += f"\n- Diagnoses (Confirmed): " + "{" + get_diag_str(diag_code[-1]) + "}"
     temp += f"\n- Procedures: " + "{" + get_pro_str(pro_code[-1]) + "}"
     temp += f"\n\n- Candidate Potential Diseases: {{{potential_disease_str}}}"
-    temp += f"\n\nYour task:\n"
-    temp += "- Synthesize the patient's historical profile to select the most clinically appropriate potential diseases from Candidate Potential Diseases for the final visit, based on your standard pathological reasoning.\n"
-    temp += "- Combine the selected valid potential diseases with the Diagnoses explicitly listed in the Final Visit.\n"
-    temp += "- Re-rank this combined list of diseases based on the Re-ranking Logic and your medical reasoning.\n"
-    temp += "- Directly provide the reordered list of disease names in descending order of likelihood. \n"
-    temp += "Output format:\nAnswer: <Disease 1>; <Disease 2>; <Disease 3>, ..."
-    input_text += temp
+
+    input_text += temp + (
+        'Your task:\n'
+        '- Perform DDx-oriented reasoning over the Patient History and Candidate Potential Diseases. '
+        "For each candidate disease, internally examine whether it is supported by the patient's "
+        'longitudinal diagnoses, procedures, medication history, disease progression, and known '
+        'comorbidity patterns.\n'
+        '- Repeatedly compare and distinguish the candidate diseases, retaining only those that are '
+        'clinically plausible latent or missing conditions for the final visit.\n'
+        '- Select the most clinically appropriate potential diseases from Candidate Potential Diseases '
+        'based on standard pathological reasoning.\n'
+        '- Directly provide the names of the selected valid potential diseases.\n'
+        '- If none of the candidate diseases are deemed clinically appropriate, output "Answer: None".\n'
+        'Output format:\n'
+        'Answer: <Disease 1>; <Disease 2>; <Disease 3>, ...'
+    )
     result = {
         "pid": pid,
         "target_drug_code": target_drug_code_atc,
