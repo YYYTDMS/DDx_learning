@@ -185,7 +185,7 @@ class ODE_VAE_Decoder(nn.Module):
 
     def forward(self, z, timestamps):
         pred_z = odeint(func=self.odefunc, y0=z, t=timestamps, method='rk4', options=dict(step_size=0.1))
-        output = self.softmax(self.final_layer(pred_z))
+        output = self.sigmoid(self.final_layer(pred_z))
         return output
 
 class ProHealth_VAE(nn.Module):
@@ -195,7 +195,7 @@ class ProHealth_VAE(nn.Module):
         self.ODE_Func = GRUODECell_Autonomous(hdim * 1)
         self.decoder = ODE_VAE_Decoder(hdim, dist_dim, nclass, self.ODE_Func)
         self.softmax = nn.Softmax()
-
+        self.sigmoid = nn.Sigmoid()
     def forward(self, Hs_diag, Hs_drug, Hs_proc, timestamps, seq_lens):
         h_list = []
         for ii in range(len(Hs_diag)):
@@ -211,7 +211,7 @@ class ProHealth_VAE(nn.Module):
         z = self.decoder.reparameterize(mu, log_var)
         zi = z
         pred_z = odeint(func=self.decoder.odefunc, y0=zi, t=timestamps, method='rk4', options=dict(step_size=0.1))
-        pred2 = self.decoder.softmax(self.decoder.final_layer(pred_z))
+        pred2 = self.decoder.sigmoid(self.decoder.final_layer(pred_z))
         pred2 = torch.swapaxes(pred2, 0, 1)
         mug = mu
         log_varg = log_var
