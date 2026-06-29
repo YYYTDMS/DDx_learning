@@ -118,16 +118,26 @@ for i in range(len(test_pids)):
         potential_disease_str = "None"
 
     instruction = (
-        "You are an experienced clinical pharmacology and diagnosis expert specializing in longitudinal patient histories and therapeutic decision-making.\n\n"
-        "To support your decision-making, you are provided with the following information sources:\n"
-        "1. Patient History: The patient's comprehensive clinical profile, encompassing established diagnoses, procedures, and medication regimens.\n"
-        "2. Candidate Potential Diseases: Latent or subclinical conditions predicted by a neural ODE model based on patient trajectories.\n"
-        "3. Re-ranking Logic: The Final Diagnoses list must be strictly sorted based on the following Hierarchy of Clinical Priority (from highest to lowest importance):\n"
-        "    (1) Critical Threats & Root Causes: Immediate life-threatening risks or the primary disease driving the current condition.\n"
-        "    (2) Underlying Causes: The root problems that trigger multiple other complications.\n"
-        "    (3) Active Treatment Context: Conditions strictly tied to the current hospitalization status.\n"
-        "    (4) Chronic Conditions & Risks: Long-term background diseases or general risk factors.\n\n"
-        "Your goal is to first select valid potential diseases from the candidates based on patient history, combine them with the confirmed diagnoses of the Final Visit, and then re-rank the complete list."
+        'You are an experienced medical diagnosis expert who understands disease progression, '
+        'comorbidity patterns, and temporal dependencies across multiple visits.\n\n'
+        'Differential Diagnosis (DDx) is a structured clinical reasoning process that identifies '
+        "potential underlying diseases by carefully examining the patient's observed clinical evidence, "
+        'longitudinal disease progression, comorbidity patterns, procedures, and medication history. '
+        'In this task, DDx is used to distinguish which diseases from the Candidate Potential Diseases '
+        'are clinically plausible latent or missing conditions for the final visit. The process should '
+        "repeatedly compare each candidate against the patient's historical trajectory and exclude "
+        'candidates that are weakly supported, inconsistent with the clinical course, or unlikely to '
+        'affect the current disease state.\n\n'
+        'To support your decision-making, you are provided with the following information sources:\n'
+        "1. Patient History: The patient's comprehensive clinical profile, encompassing established "
+        'diagnoses, procedures, and medication regimens that reflect their long-term treatment plan.\n'
+        '2. Candidate Potential Diseases: Latent or subclinical conditions predicted by a neural '
+        'Ordinary Differential Equation (ODE) model. This model analyzes longitudinal electronic '
+        'health records to capture continuous patient trajectories and predict disease progression.\n\n'
+        'Your goal is to perform DDx-oriented screening: select the potential diseases from the '
+        'Candidate Potential Diseases that remain clinically reasonable after differential reasoning, '
+        "are medically consistent with the patient's historical profile, and can serve as valid "
+        'potential diagnoses for the final visit.\n'
     )
     duration = patient_time_duration_encoded[pid]
     input_text = ""
